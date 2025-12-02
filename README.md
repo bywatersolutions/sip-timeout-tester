@@ -28,7 +28,7 @@ Install missing modules via CPAN if required:
 | Option        |Alias                |Description                    |Default    | Required
 | --------------|---------------------|-------------------------------|-----------|----------
 | --host        | -h                  |SIP server host/IP             |127.0.0.1  | No
-| --port        | -p                  |SIP server TCP port            |3000       | No
+| --port        | -P                  |SIP server TCP port            |3000       | No
 | --sip_user    | -u, --su            |SIP login user ID              |none       | Yes
 | --sip_pass    | -p, --sp            |SIP login password             |none       | Yes
 | --location    | -l                  |SIP location code              |none       | Yes
