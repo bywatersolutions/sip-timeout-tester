@@ -11,10 +11,10 @@ use Getopt::Long::Descriptive;
 
 my ( $opt, $usage ) = describe_options(
     "%c %o",
-    [ "host|h=s",      "Host IP address",    { default  => '127.0.0.1' } ],
-    [ "port|p=i",      "Port number",        { default  => 3000 } ],
-    [ "sip_user|su=s", "SIP login user ID",  { required => 1 } ],
-    [ "sip_pass|sp=s", "SIP login password", { required => 1 } ],
+    [ "host|h=s",        "Host IP address",    { default  => '127.0.0.1' } ],
+    [ "port|p=i",        "Port number",        { default  => 3000 } ],
+    [ "sip_user|su|u=s", "SIP login user ID",  { required => 1 } ],
+    [ "sip_pass|sp|p=s", "SIP login password", { required => 1 } ],
     [ "location|location_code|l=s", "SIP location code", { required => 1 } ],
     [
         "terminator|t=s",

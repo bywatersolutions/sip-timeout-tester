@@ -25,15 +25,15 @@ Install missing modules via CPAN if required:
 
 ### Options
 
- | Option        |Alias                |Description                    |Default    | Required
- | --------------|---------------------|-------------------------------|-----------|----------
- | --host        | -h                  |SIP server host/IP             |127.0.0.1  | No
- | --port        | -p                  |SIP server TCP port            |3000       | No
- | --sip_user    | --su                |SIP login user ID              |none       | Yes
- | --sip_pass    | --sp                |SIP login password             |none       | Yes
- | --location    | --location_code, -l |SIP location code              |none       | Yes
- | --terminator  | -t                  |Record terminator: CR or CRLF  |CR         | No
- | --help        |                     |Show usage information         |---        | No
+| Option        |Alias                |Description                    |Default    | Required
+| --------------|---------------------|-------------------------------|-----------|----------
+| --host        | -h                  |SIP server host/IP             |127.0.0.1  | No
+| --port        | -p                  |SIP server TCP port            |3000       | No
+| --sip_user    | -u, --su            |SIP login user ID              |none       | Yes
+| --sip_pass    | -p, --sp            |SIP login password             |none       | Yes
+| --location    | -l                  |SIP location code              |none       | Yes
+| --terminator  | -t                  |Record terminator: CR or CRLF  |CR         | No
+| --help        |                     |Show usage information         |---        | No
 
 ## Example
 
