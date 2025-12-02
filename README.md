@@ -33,7 +33,7 @@ Install missing modules via CPAN if required:
 | --sip_pass    | -p, --sp            |SIP login password             |none       | Yes
 | --location    | -l                  |SIP location code              |none       | Yes
 | --terminator  | -t                  |Record terminator: CR or CRLF  |CR         | No
-| --help        |                     |Show usage information         |---        | No
+| --help        | -h                  |Show usage information         |           | No
 
 ## Example
 
