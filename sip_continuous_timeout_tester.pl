@@ -1,0 +1,136 @@
+#!/usr/bin/perl
+
+use Getopt::Long::Descriptive;
+use IO::Select;
+use IO::Socket::INET;
+use Modern::Perl;
+use Socket      qw(:crlf);
+use Time::HiRes qw(time);
+
+my ( $opt, $usage ) = describe_options(
+    "%c %o",
+    [ "host|h=s",        "Host IP address",    { default  => '127.0.0.1' } ],
+    [ "port|P=i",        "Port number",        { default  => 3000 } ],
+    [ "sip_user|su|u=s", "SIP login user ID",  { required => 1 } ],
+    [ "sip_pass|sp|p=s", "SIP login password", { required => 1 } ],
+    [ "location|location_code|l=s", "SIP location code", { required => 1 } ],
+    [ "interval|i=i",    "Seconds between SIP 99 status messages", { default => 60 } ],
+    [
+        "terminator|t=s",
+        "Terminator character, CR or CRLF",
+        { default => "CR" }
+    ],
+    [],
+    [ "help", "Show this message", { shortcircuit => 1 } ],
+);
+
+print($usage->text), exit if $opt->help;
+
+my $terminator = $opt->terminator eq 'CR' ? $CR : $CRLF;
+
+my $last_disconnect_time = time();
+
+my $logged_in = 0;
+while (1) {
+
+    my $sock = connect_socket();
+
+    if (!$sock) {
+        say "Failed to connect to $opt->{host}:$opt->{port}, retrying in 5s...";
+        sleep 5;
+        next;
+    }
+
+    my $connected_at = time();
+    say "Connected.";
+
+    # Send login
+    my $login = sip_login($opt->sip_user, $opt->sip_pass, $opt->location);
+    send_msg($sock, $login);
+
+    my $next_status = time() + 1;    # send after 1 second initially
+
+    my $select = IO::Select->new($sock);
+
+    while (1) {
+
+        # Check if socket closed
+        my @ready = $select->can_read(0.1);
+
+        foreach my $fh (@ready) {
+            my $buffer = "";
+            my $bytes  = sysread($fh, $buffer, 1024);
+
+            if (!$bytes) {
+                my $now = time();
+                my $elapsed = sprintf("%.2f", $now - $connected_at);
+
+                say "Disconnected after $elapsed seconds.";
+
+                $last_disconnect_time = $now;
+                close $sock;
+                undef $sock;
+                last;
+            } else {
+                say "Received data: $buffer";
+                if ( $buffer eq "940" ) {
+                    say "Login failed, exiting.";
+                    exit 1;
+                }
+            }
+        }
+
+        # Send SC Status at interval
+        if (time() >= $next_status) {
+            send_msg($sock, sip_sc_status());
+            $next_status = time() + $opt->interval;
+        }
+
+        last unless $sock;    # break inner loop if disconnected
+    }
+
+    # Backoff before reconnect
+    say "Reconnecting in 3 seconds...";
+    sleep 3;
+}
+
+use constant {
+    FID_LOGIN_UID     => 'CN',
+    FID_LOGIN_PWD     => 'CO',
+    FID_LOCATION_CODE => 'CP',
+    LOGIN             => '93',
+};
+
+sub sip_login {
+    my ($login_user_id, $login_password, $location_code) = @_;
+
+    return
+        LOGIN . "00"
+      . FID_LOGIN_UID
+      . $login_user_id . "|"
+      . FID_LOGIN_PWD
+      . $login_password . "|"
+      . FID_LOCATION_CODE
+      . $location_code . "|";
+}
+
+sub sip_sc_status {
+    return "9900";    # Basic SC Status message
+}
+
+sub connect_socket {
+    my $sock = IO::Socket::INET->new(
+        PeerHost => $opt->host,
+        PeerPort => $opt->port,
+        Proto    => 'tcp',
+        Timeout  => 10,
+    );
+
+    return $sock;
+}
+
+sub send_msg {
+    my ($sock, $msg) = @_;
+    say "Sending message: $msg";
+    print $sock $msg . $terminator;
+}
