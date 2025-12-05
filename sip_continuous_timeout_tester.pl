@@ -21,6 +21,7 @@ my ( $opt, $usage ) = describe_options(
         { default => "CR" }
     ],
     [],
+    [ "verbose|v", "Enable verbose output" ],
     [ "help", "Show this message", { shortcircuit => 1 } ],
 );
 
@@ -72,7 +73,7 @@ while (1) {
                 undef $sock;
                 last;
             } else {
-                say "Received data: $buffer";
+                say "Received data: $buffer" if $opt->verbose;
                 if ( $buffer eq "940" ) {
                     say "Login failed, exiting.";
                     exit 1;
@@ -131,6 +132,6 @@ sub connect_socket {
 
 sub send_msg {
     my ($sock, $msg) = @_;
-    say "Sending message: $msg";
+    say "Sending message: $msg" if $opt->verbose;
     print $sock $msg . $terminator;
 }
