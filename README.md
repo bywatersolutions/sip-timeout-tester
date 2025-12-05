@@ -45,6 +45,33 @@ Install missing modules via CPAN if required:
 
     ./sip2_connection_timer.pl -t CRLF --su admin --sp 1234 -l EAST
 
+
+# SIP Continuous Timeout Tester
+
+This script (`sip_continuous_timeout_tester.pl`) connects to a SIP2 server, logs in, and sends periodic status messages (SIP 99) to keep the connection alive or test timeout behavior. It automatically reconnects if the connection is dropped.
+
+## Usage
+
+    ./sip_continuous_timeout_tester.pl [options]
+
+### Options
+
+| Option        |Alias                |Description                    |Default    | Required
+| --------------|---------------------|-------------------------------|-----------|----------
+| --host        | -h                  |SIP server host/IP             |127.0.0.1  | No
+| --port        | -P                  |SIP server TCP port            |3000       | No
+| --sip_user    | -u, --su            |SIP login user ID              |none       | Yes
+| --sip_pass    | -p, --sp            |SIP login password             |none       | Yes
+| --location    | -l                  |SIP location code              |none       | Yes
+| --interval    | -i                  |Seconds between SIP 99 messages|60         | No
+| --terminator  | -t                  |Record terminator: CR or CRLF  |CR         | No
+| --verbose     | -v                  |Enable verbose output          |Disabled   | No
+| --help        |                     |Show usage information         |           | No
+
+### Example
+
+    ./sip_continuous_timeout_tester.pl --host 192.168.1.50 --port 6001 --sip_user sipuser --sip_pass secret123 --location MAIN --interval 30 --verbose
+
 ## License
 
 GPLv3
