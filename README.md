@@ -66,11 +66,12 @@ This script (`sip_continuous_timeout_tester.pl`) connects to a SIP2 server, logs
 | --interval    | -i                  |Seconds between SIP 99 messages|60         | No
 | --terminator  | -t                  |Record terminator: CR or CRLF  |CR         | No
 | --verbose     | -v                  |Enable verbose output          |Disabled   | No
+| --log-file    | -f                  |Log output to file             |none       | No
 | --help        |                     |Show usage information         |           | No
 
 ### Example
 
-    ./sip_continuous_timeout_tester.pl --host 192.168.1.50 --port 6001 --sip_user sipuser --sip_pass secret123 --location MAIN --interval 30 --verbose
+    ./sip_continuous_timeout_tester.pl --host 192.168.1.50 --port 6001 --sip_user sipuser --sip_pass secret123 --location MAIN --interval 30 --verbose --log-file sip_test.log
 
 ## License
 

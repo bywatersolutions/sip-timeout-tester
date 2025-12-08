@@ -23,6 +23,7 @@ my ( $opt, $usage ) = describe_options(
     ],
     [],
     [ "verbose|v", "Enable verbose output" ],
+    [ "log-file|f=s", "Log output to file" ],
     [ "help", "Show this message", { shortcircuit => 1 } ],
 );
 
@@ -140,5 +141,13 @@ sub send_msg {
 sub log_msg {
     my ($msg) = @_;
     my $timestamp = strftime( "%Y-%m-%d %H:%M:%S", localtime );
-    say "[$timestamp] $msg";
+    my $log_line  = "[$timestamp] $msg";
+
+    say $log_line;
+
+    if ( $opt->log_file ) {
+        open( my $fh, '>>', $opt->log_file ) or warn "Could not open log file: $!";
+        say $fh $log_line;
+        close $fh;
+    }
 }
