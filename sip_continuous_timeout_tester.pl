@@ -6,6 +6,7 @@ use IO::Socket::INET;
 use Modern::Perl;
 use Socket      qw(:crlf);
 use Time::HiRes qw(time);
+use POSIX       qw(strftime);
 
 my ( $opt, $usage ) = describe_options(
     "%c %o",
@@ -37,13 +38,13 @@ while (1) {
     my $sock = connect_socket();
 
     if (!$sock) {
-        say "Failed to connect to $opt->{host}:$opt->{port}, retrying in 5s...";
+        log_msg("Failed to connect to $opt->{host}:$opt->{port}, retrying in 5s...");
         sleep 5;
         next;
     }
 
     my $connected_at = time();
-    say "Connected.";
+    log_msg("Connected.");
 
     # Send login
     my $login = sip_login($opt->sip_user, $opt->sip_pass, $opt->location);
@@ -66,16 +67,16 @@ while (1) {
                 my $now = time();
                 my $elapsed = sprintf("%.2f", $now - $connected_at);
 
-                say "Disconnected after $elapsed seconds.";
+                log_msg("Disconnected after $elapsed seconds.");
 
                 $last_disconnect_time = $now;
                 close $sock;
                 undef $sock;
                 last;
             } else {
-                say "Received data: $buffer" if $opt->verbose;
+                log_msg("Received data: $buffer") if $opt->verbose;
                 if ( $buffer eq "940" ) {
-                    say "Login failed, exiting.";
+                    log_msg("Login failed, exiting.");
                     exit 1;
                 }
             }
@@ -91,7 +92,7 @@ while (1) {
     }
 
     # Backoff before reconnect
-    say "Reconnecting in 3 seconds...";
+    log_msg("Reconnecting in 3 seconds...");
     sleep 3;
 }
 
@@ -132,6 +133,12 @@ sub connect_socket {
 
 sub send_msg {
     my ($sock, $msg) = @_;
-    say "Sending message: $msg" if $opt->verbose;
+    log_msg("Sending message: $msg") if $opt->verbose;
     print $sock $msg . $terminator;
+}
+
+sub log_msg {
+    my ($msg) = @_;
+    my $timestamp = strftime( "%Y-%m-%d %H:%M:%S", localtime );
+    say "[$timestamp] $msg";
 }
