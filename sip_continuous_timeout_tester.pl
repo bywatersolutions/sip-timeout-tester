@@ -43,8 +43,6 @@ my $terminator = $opt->terminator eq 'CR' ? $CR : $CRLF;
 my $last_disconnect_time = time();
 
 my $logged_in = 0;
-say "STARTING1";
-warn "STARTING2";
 while (1) {
 
     my $sock = connect_socket();
