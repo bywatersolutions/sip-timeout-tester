@@ -1,0 +1,12 @@
+FROM perl:stable
+
+WORKDIR /app
+
+# Install dependencies
+RUN cpanm -n Getopt::Long::Descriptive IO::Socket::INET Modern::Perl Type::Tiny
+
+# Copy application code
+COPY sip_continuous_timeout_tester.pl .
+
+# Set entrypoint
+ENTRYPOINT ["perl", "sip_continuous_timeout_tester.pl"]

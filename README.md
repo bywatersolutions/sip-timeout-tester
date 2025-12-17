@@ -73,6 +73,31 @@ This script (`sip_continuous_timeout_tester.pl`) connects to a SIP2 server, logs
 
     ./sip_continuous_timeout_tester.pl --host 192.168.1.50 --port 6001 --sip_user sipuser --sip_pass secret123 --location MAIN --interval 30 --verbose --log-file sip_test.log
 
+
+### Docker Usage
+
+You can also run the continuous tester using Docker.
+
+**Build the image:**
+
+    docker build -t sip-tester .
+
+**Run the container:**
+
+    docker run --env SIP_USER=sipuser --env SIP_PASS=secret123 --env SIP_LOCATION=MAIN sip-tester
+
+Supported environment variables (override command line defaults):
+
+*   `SIP_HOST`
+*   `SIP_PORT`
+*   `SIP_USER`
+*   `SIP_PASS`
+*   `SIP_LOCATION`
+*   `SIP_INTERVAL`
+*   `SIP_TERMINATOR`
+*   `SIP_VERBOSE`
+*   `SIP_LOG_FILE`
+
 ## License
 
 GPLv3

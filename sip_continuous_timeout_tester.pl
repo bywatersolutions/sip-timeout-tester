@@ -8,32 +8,43 @@ use Socket      qw(:crlf);
 use Time::HiRes qw(time);
 use POSIX       qw(strftime);
 
+$| = 1; # Enable autoflush
+
+
 my ( $opt, $usage ) = describe_options(
     "%c %o",
-    [ "host|h=s",        "Host IP address",    { default  => '127.0.0.1' } ],
-    [ "port|P=i",        "Port number",        { default  => 3000 } ],
-    [ "sip_user|su|u=s", "SIP login user ID",  { required => 1 } ],
-    [ "sip_pass|sp|p=s", "SIP login password", { required => 1 } ],
-    [ "location|location_code|l=s", "SIP location code", { required => 1 } ],
-    [ "interval|i=i",    "Seconds between SIP 99 status messages", { default => 60 } ],
+    [ "host|h=s",        "Host IP address",    { default  => $ENV{SIP_HOST} // '127.0.0.1' } ],
+    [ "port|P=i",        "Port number",        { default  => $ENV{SIP_PORT} // 3000 } ],
+    [ "sip_user|su|u=s", "SIP login user ID",  { default => $ENV{SIP_USER} } ],
+    [ "sip_pass|sp|p=s", "SIP login password", { default => $ENV{SIP_PASS} } ],
+    [ "location|location_code|l=s", "SIP location code", { default => $ENV{SIP_LOCATION} } ],
+    [ "interval|i=i",    "Seconds between SIP 99 status messages", { default => $ENV{SIP_INTERVAL} // 60 } ],
     [
         "terminator|t=s",
         "Terminator character, CR or CRLF",
-        { default => "CR" }
+        { default => $ENV{SIP_TERMINATOR} // "CR" }
     ],
     [],
-    [ "verbose|v", "Enable verbose output" ],
-    [ "log-file|f=s", "Log output to file" ],
+    [ "verbose|v", "Enable verbose output", { default => $ENV{SIP_VERBOSE} } ],
+    [ "log-file|f=s", "Log output to file", { default => $ENV{SIP_LOG_FILE} } ],
     [ "help", "Show this message", { shortcircuit => 1 } ],
 );
 
 print($usage->text), exit if $opt->help;
+
+if ( !defined $opt->sip_user || !defined $opt->sip_pass || !defined $opt->location ) {
+    say "Missing required options: sip_user, sip_pass, location";
+    print($usage->text);
+    exit 1;
+}
 
 my $terminator = $opt->terminator eq 'CR' ? $CR : $CRLF;
 
 my $last_disconnect_time = time();
 
 my $logged_in = 0;
+say "STARTING1";
+warn "STARTING2";
 while (1) {
 
     my $sock = connect_socket();
